@@ -11,11 +11,11 @@ export const dataLayer = fromJS({
     'fill-color': {
       property: 'actual_value',
       stops: [
-        [0, '#e0dbdc'],
-        [1, '#b2aeaf'],
-        [2, '#918e8f'],
-        [3, '#6d6b6c'],
-        [4, '#4c4a4b']
+        [0, '#ffffd9'],
+        [1, '#caeab4'],
+        [2, '#8fd3ba'],
+        [3, '#2b9cc1'],
+        [4, '#1a468a']
       ]
     },
     'fill-opacity': 0.8
