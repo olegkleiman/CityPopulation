@@ -9,8 +9,8 @@ export default class ControlPanel extends PureComponent {
 
     return (
       <Container>
-        <h3>Tel-Aviv Movements</h3>
-        <p>The map shows the average travel time from the origin zone to all other zones for the selected date-time range.</p>
+        <h3>Tel-Aviv Population</h3>
+        <p>The map shows the population of the City districts for the selected year.</p>
         <p>
           <b>{settings.year}</b>
         </p>

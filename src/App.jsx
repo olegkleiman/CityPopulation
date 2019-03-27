@@ -5,7 +5,8 @@ import {json as requestJson} from 'd3-request';
 // import d3 from 'd3-fetch';
 import {fromJS} from 'immutable';
 
-import ControlPanel from './control-panel';
+import ControlPanel from './ControlPanel';
+import Legend from './Legend';
 import {defaultMapStyle, dataLayer} from './map-style.js';
 import {updatePercentiles} from './utils';
 
@@ -145,6 +146,8 @@ class App extends Component {
           <ControlPanel containerComponent={this.props.containerComponent}
                         settings={this.state}
                         onChange={this._updateSettings} />
+          <Legend containerComponent={this.props.containerComponent}
+                        settings={this.state} />
         </div>
     )
   }
