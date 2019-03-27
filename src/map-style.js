@@ -18,7 +18,8 @@ export const dataLayer = fromJS({
         [4, '#1a468a']
       ]
     },
-    'fill-opacity': 0.8
+    'fill-opacity': 0.8,
+    'fill-outline-color': '#fff'
   }
 });
 
