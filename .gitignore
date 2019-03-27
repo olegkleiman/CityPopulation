@@ -1,5 +1,6 @@
 node_modules/
 dist/*.js
 dist/stats.html
+dist/data/*.*
 .DS_Store
 yarn-error.log
