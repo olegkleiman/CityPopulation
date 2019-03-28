@@ -24,15 +24,14 @@ const myMapStyle = fromJS({
   }
 });
 
-let sheetData = {
-
-}
+let sheetData = {}
 
 class App extends Component {
 
   state = {
     mapStyle: defaultMapStyle,
     year: 2009,
+    ageGroup: 'total',
     data: null,
     hoveredFeature: null,
     viewport: {
@@ -43,6 +42,11 @@ class App extends Component {
       pitch: 0
     }
   };
+
+  constructor(props) {
+    super(props);
+    this._updateSettings = this._updateSettings.bind(this);
+  }
 
   getSheetData = async (SheetName) => {
     const url = `https://sheets.googleapis.com/v4/spreadsheets/1GJWgz04VTdJIPT5y4N8qkY-fkNc3lvbxATv8TeC-deA/values/${SheetName}?key=AIzaSyABrJkY9bVKLn3YB8f4kmiiGBDWhv4goYA&majorDimension=ROWS`;
@@ -61,32 +65,41 @@ class App extends Component {
 
   }
 
-  updateSheetData = async (sheetName) => {
+  updateSheetData = async (sheetName, ageGroup) => {
 
-    if( sheetData.hasOwnProperty(sheetName) )
-      return;
+    const districtsData = ( !sheetData.hasOwnProperty(sheetName) ) ?
+      await this.getSheetData(sheetName) :
+      sheetData[sheetName].rawData;
 
-    const districtsData = await this.getSheetData(sheetName);
-
+    let columns = [];
     const districtsMap = new Map();
     districtsData.forEach( (item, index) => {
-      if( index > 1 ) {
-        districtsMap.set(item[0], parseFloat(item[3].replace(/,/g, '')));
+      if( index === 0 ) {
+        columns = item;
+      } else {
+        const columnIndex = columns.findIndex( item => item === ageGroup );
+        districtsMap.set(item[0], {
+          "total": parseFloat(item[columnIndex].replace(/,/g, '')),
+        });
       }
     });
 
-    sheetData[sheetName] = districtsMap;
+    sheetData[sheetName] = {
+      map: districtsMap,
+      rawData: districtsData
+    }
   }
 
   _loadData = async(data) => {
 
-    await this.updateSheetData(this.state.year);
+    await this.updateSheetData(this.state.year, this.state.ageGroup);
 
     updatePercentiles(data,
                       f => f.properties.Id,
                       sheetData,
                       (f, districtId) => {
-                        return f[this.state.year].get(districtId);
+                        const row = f[this.state.year].map.get(districtId);
+                        return row ? row.total : NaN;
                       });
 
     const layers = defaultMapStyle.get('layers');
@@ -103,29 +116,38 @@ class App extends Component {
 
   _onViewportChange = viewport => this.setState({viewport});
 
+  _performUpdate = async() => {
+
+    const {data, mapStyle} = this.state;
+    if (data) {
+
+      await this.updateSheetData(this.state.year, this.state.ageGroup);
+
+      updatePercentiles(data,
+                        f => f.properties.Id,
+                        sheetData,
+                        (f, districtId) => {
+                          const row = f[this.state.year].map.get(districtId);
+                          return row ? row.total : NaN;
+                        }
+                      );
+
+      const newMapStyle = mapStyle.setIn(['sources', 'population', 'data'], fromJS(data));
+      this.setState({mapStyle: newMapStyle});
+
+    }
+  }
+
   _updateSettings = (name, value) => {
-    // console.log(`${name} ${value}`);
+
+    if( name == 'ageGroup') {
+      this.setState({ageGroup: value},
+      this._performUpdate);
+    }
+
     if (name === 'year') {
       this.setState({year: value},
-      async () => {
-        const {data, mapStyle} = this.state;
-        if (data) {
-
-          await this.updateSheetData(this.state.year);
-
-          updatePercentiles(data,
-                            f => f.properties.Id,
-                            sheetData,
-                            (f, districtId) => {
-                              return f[this.state.year].get(districtId);
-                            }
-                          );
-
-          const newMapStyle = mapStyle.setIn(['sources', 'population', 'data'], fromJS(data));
-          this.setState({mapStyle: newMapStyle});
-
-        }
-      });
+      this._performUpdate);
     }
   }
 
