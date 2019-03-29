@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import MapGL, {Marker, NavigationControl} from 'react-map-gl';
+import MapGL, {Marker, Popup } from 'react-map-gl';
+const { point, polygon } = require('@turf/helpers');
+const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 
 import {json as requestJson} from 'd3-request';
-// import d3 from 'd3-fetch';
 import {fromJS} from 'immutable';
 
 import ControlPanel from './ControlPanel';
 import Legend from './Legend';
+import DistrictInfo from './DistrictInfo';
 import {defaultMapStyle, dataLayer} from './map-style.js';
 import {updatePercentiles} from './utils';
 
@@ -36,11 +38,12 @@ class App extends Component {
     hoveredFeature: null,
     viewport: {
       latitude: 32.066667,
-      longitude:  34.783333,
-      zoom: 11,
+      longitude: 34.783333,
+      zoom: 12,
       bearing: 0,
       pitch: 0
-    }
+    },
+    popupInfo: null
   };
 
   constructor(props) {
@@ -149,6 +152,52 @@ class App extends Component {
       this.setState({year: value},
       this._performUpdate);
     }
+
+    this.setState({popupInfo: null});
+  }
+
+  _renderPopup() {
+    const {popupInfo} = this.state;
+
+    return popupInfo && (
+      <Popup tipSize={5}
+        anchor="top"
+        longitude={popupInfo.longitude}
+        latitude={popupInfo.latitude}
+        closeOnClick={false}
+
+        onClose={() => this.setState({popupInfo: null})} >
+        <DistrictInfo info={popupInfo} />
+      </Popup>
+    );
+  }
+
+  onClick = (evt) => {
+
+    // const pt = turf.point([evt.lngLat[0], evt.lngLat[1]]);
+    const pt = point([evt.lngLat[0], evt.lngLat[1]]);
+
+    let disctrictInfo = {};
+    let isFound = this.state.data.features.reduce( (accumulator, feature) => {
+      const _isFound = booleanPointInPolygon(pt, feature);
+      if( _isFound ) {
+        disctrictInfo.name = feature.properties.Name;
+        const value = feature.properties.value <= 0 ? NaN : feature.properties.value;
+        disctrictInfo.value = value;
+      }
+      return accumulator || _isFound;
+    }, false);
+
+    if( isFound ) {
+      this.setState({ popupInfo: {
+        longitude: evt.lngLat[0],
+        latitude: evt.lngLat[1],
+        districtInfo: disctrictInfo
+      }});
+    } else {
+      this.setState({ popupInfo: null });
+    }
+
   }
 
   render() {
@@ -162,7 +211,10 @@ class App extends Component {
             height="100%"
             mapStyle={mapStyle}
             onViewportChange={this._onViewportChange}
+            onClick={this.onClick}
             mapboxApiAccessToken={MAPBOX_TOKEN}>
+
+            {this._renderPopup()}
 
           </MapGL>
           <ControlPanel containerComponent={this.props.containerComponent}
