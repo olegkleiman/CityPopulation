@@ -11,6 +11,7 @@ import Legend from './Legend';
 import DistrictInfo from './DistrictInfo';
 import {defaultMapStyle, dataLayer} from './map-style.js';
 import {updatePercentiles} from './utils';
+import SheetData from './SheetData';
 
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
 
@@ -25,8 +26,6 @@ const myMapStyle = fromJS({
     "intensity": 0.4
   }
 });
-
-let sheetData = {}
 
 class App extends Component {
 
@@ -70,9 +69,9 @@ class App extends Component {
 
   updateSheetData = async (sheetName, ageGroup) => {
 
-    const districtsData = ( !sheetData.hasOwnProperty(sheetName) ) ?
+    const districtsData = ( !SheetData.hasOwnProperty(sheetName) ) ?
       await this.getSheetData(sheetName) :
-      sheetData[sheetName].rawData;
+      SheetData[sheetName].rawData;
 
     let columns = [];
     const districtsMap = new Map();
@@ -87,7 +86,7 @@ class App extends Component {
       }
     });
 
-    sheetData[sheetName] = {
+    SheetData[sheetName] = {
       map: districtsMap,
       rawData: districtsData
     }
@@ -99,14 +98,13 @@ class App extends Component {
 
     updatePercentiles(data,
                       f => f.properties.Id,
-                      sheetData,
+                      SheetData,
                       (f, districtId) => {
                         const row = f[this.state.year].map.get(districtId);
                         return row ? row.total : NaN;
                       });
 
     const layers = defaultMapStyle.get('layers');
-    // console.log(layers);
 
     const mapStyle = defaultMapStyle
       // Add geojson source to map
@@ -128,7 +126,7 @@ class App extends Component {
 
       updatePercentiles(data,
                         f => f.properties.Id,
-                        sheetData,
+                        SheetData,
                         (f, districtId) => {
                           const row = f[this.state.year].map.get(districtId);
                           return row ? row.total : NaN;
@@ -182,6 +180,7 @@ class App extends Component {
       const _isFound = booleanPointInPolygon(pt, feature);
       if( _isFound ) {
         disctrictInfo.name = feature.properties.Name;
+        disctrictInfo.id = feature.properties.Id;
         const value = feature.properties.value <= 0 ? NaN : feature.properties.value;
         disctrictInfo.value = value;
       }

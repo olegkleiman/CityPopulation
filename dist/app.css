@@ -172,3 +172,7 @@ input {
   z-index: 9;
   pointer-events: none;
 }
+
+.rv-xy-plot {
+  font-family: sans-serif;
+}
