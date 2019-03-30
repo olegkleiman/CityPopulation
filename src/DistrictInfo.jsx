@@ -42,11 +42,11 @@ const DistrictInfo = ({info}) => {
   }
 
   return (<>
-    <div>{info.districtInfo.name}</div>
+    <div className='centered'>{info.districtInfo.name}</div>
     <br />
-    <div>{textLine} inhabitants</div>
+    <div className='centered'>{textLine} inhabitants for {info.year}</div>
     <br />
-    <XYPlot height={300} width= {380} xType="ordinal">
+    <XYPlot height={300} width= {440} xType="ordinal">
       <XAxis />
       <YAxis />
       <HorizontalGridLines />

@@ -189,6 +189,7 @@ class App extends Component {
 
     if( isFound ) {
       this.setState({ popupInfo: {
+        year: this.state.year,
         longitude: evt.lngLat[0],
         latitude: evt.lngLat[1],
         districtInfo: disctrictInfo

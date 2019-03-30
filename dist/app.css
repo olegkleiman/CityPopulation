@@ -176,3 +176,11 @@ input {
 .rv-xy-plot {
   font-family: sans-serif;
 }
+
+.rv-xy-plot__axis__tick__text {
+  font-size: 9px;
+}
+
+.centered {
+  text-align: center;
+}
