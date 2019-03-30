@@ -184,3 +184,12 @@ input {
 .centered {
   text-align: center;
 }
+
+.hint {
+  background: white;
+  font-size: 14px;
+  top: auto;
+  border: solid grey 1px;
+  padding: 10px;
+  font-family: Helvetica, Arial, sans-serif;
+}

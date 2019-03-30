@@ -6,6 +6,7 @@ import {XYPlot,
         Hint,
         VerticalBarSeries
         } from 'react-vis';
+import empty from 'is-empty';
 import SheetData from './SheetData';
 
 const DistrictInfo = ({info}) => {
@@ -40,6 +41,17 @@ const DistrictInfo = ({info}) => {
     setHintValue({});
   }
 
+  const renderHint = () => {
+    return empty(hintValue) ?
+            null :
+            <Hint value={hintValue} align={{horizontal: 'auto', vertical: 'top'}}>
+              <div className='hint'>
+                <div>Population for {hintValue.x}:</div>
+                <div>{hintValue.y.toLocaleString()} inhabitants</div>
+              </div>
+            </Hint>
+  }
+
   const renderPlot = (value) => {
     return isNaN(info.districtInfo.value) ?
       null :
@@ -50,12 +62,7 @@ const DistrictInfo = ({info}) => {
             <VerticalBarSeries data={data}
               onMouseLeave={_onMouseLeave}
               onNearestX={_onNearestX}/>
-            <Hint value={hintValue}>
-              <div style={{background: 'white', fontSize: 14, top: 'auto', border: 'solid grey 1px', padding: '10px'}}>
-                <h3>Population</h3>
-                <p>{hintValue.y}</p>
-              </div>
-            </Hint>
+            { renderHint() }
 
           </XYPlot>
       )
