@@ -1,7 +1,6 @@
 let sheetData = {
 
-  load: function (sheetId) {
-    console.log('load started');
+  load(sheetId) {
 
     ['2010', '2011', '2012', '2013', '2014', '2015', '2016'].map( async(sheetName) => {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=AIzaSyABrJkY9bVKLn3YB8f4kmiiGBDWhv4goYA&majorDimension=ROWS`;
