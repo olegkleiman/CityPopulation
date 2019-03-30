@@ -29,7 +29,6 @@ const DistrictInfo = ({info}) => {
     }
   };
 
-
   const textLine = isNaN(info.districtInfo.value)  ?
     'No' : info.districtInfo.value.toLocaleString();
 
@@ -41,26 +40,33 @@ const DistrictInfo = ({info}) => {
     setHintValue({});
   }
 
+  const renderPlot = (value) => {
+    return isNaN(info.districtInfo.value) ?
+      null :
+      (<XYPlot height={300} width= {440} xType="ordinal">
+            <XAxis />
+            <YAxis />
+            <HorizontalGridLines />
+            <VerticalBarSeries data={data}
+              onMouseLeave={_onMouseLeave}
+              onNearestX={_onNearestX}/>
+            <Hint value={hintValue}>
+              <div style={{background: 'white', fontSize: 14, top: 'auto', border: 'solid grey 1px', padding: '10px'}}>
+                <h3>Population</h3>
+                <p>{hintValue.y}</p>
+              </div>
+            </Hint>
+
+          </XYPlot>
+      )
+  }
+
   return (<>
     <div className='centered'>{info.districtInfo.name}</div>
     <br />
     <div className='centered'>{textLine} inhabitants for {info.year}</div>
     <br />
-    <XYPlot height={300} width= {440} xType="ordinal">
-      <XAxis />
-      <YAxis />
-      <HorizontalGridLines />
-      <VerticalBarSeries data={data}
-        onMouseLeave={_onMouseLeave}
-        onNearestX={_onNearestX}/>
-      <Hint value={hintValue}>
-        <div style={{background: 'white', fontSize: 14, top: 'auto', border: 'solid grey 1px', padding: '10px'}}>
-          <h3>Population</h3>
-          <p>{hintValue.y}</p>
-        </div>
-      </Hint>
-
-    </XYPlot>
+    {renderPlot(info.districtInfo.value)}
 
   </>)
 }
