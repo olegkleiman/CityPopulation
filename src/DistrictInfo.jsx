@@ -37,8 +37,8 @@ const DistrictInfo = ({info}) => {
     setHintValue(value);
   }
 
-  const _onMouseLeave = () => {
-    setHintValue({});
+  const _onMouseOut = (event) => {
+    setHintValue(null);
   }
 
   const renderHint = () => {
@@ -60,8 +60,8 @@ const DistrictInfo = ({info}) => {
             <YAxis />
             <HorizontalGridLines />
             <VerticalBarSeries data={data}
-              onMouseLeave={_onMouseLeave}
-              onNearestX={_onNearestX}/>
+              onSeriesMouseOut={_onMouseOut}
+              onNearestX={_onNearestX} />
             { renderHint() }
 
           </XYPlot>

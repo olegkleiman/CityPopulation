@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import MapGL, {Marker, Popup } from 'react-map-gl';
+import MapGL, { Marker, Popup, FullscreenControl} from 'react-map-gl';
 const { point, polygon } = require('@turf/helpers');
 const booleanPointInPolygon = require('@turf/boolean-point-in-polygon').default;
 
@@ -10,7 +10,7 @@ import ControlPanel from './ControlPanel';
 import Legend from './Legend';
 import DistrictInfo from './DistrictInfo';
 import {defaultMapStyle, dataLayer} from './map-style.js';
-import {updatePercentiles} from './utils';
+import {updateDataValue} from './utils';
 import SheetData from './SheetData';
 
 const MAPBOX_TOKEN = process.env.MapboxAccessToken;
@@ -27,6 +27,13 @@ const myMapStyle = fromJS({
   }
 });
 
+const fullscreenControlStyle = {
+  position: 'absolute',
+  top: 0,
+  right: 0,
+  padding: '10px'
+};
+
 class App extends Component {
 
   state = {
@@ -42,7 +49,8 @@ class App extends Component {
       bearing: 0,
       pitch: 0
     },
-    popupInfo: null
+    popupInfo: null,
+    hover: false
   };
 
   constructor(props) {
@@ -96,7 +104,7 @@ class App extends Component {
 
     await this.updateSheetData(this.state.year, this.state.ageGroup);
 
-    updatePercentiles(data,
+    updateDataValue(data,
                       f => f.properties.Id,
                       SheetData,
                       (f, districtId) => {
@@ -104,11 +112,11 @@ class App extends Component {
                         return row ? row.total : NaN;
                       });
 
-    const layers = defaultMapStyle.get('layers');
+    // const layers = defaultMapStyle.get('layers');
 
     const mapStyle = defaultMapStyle
       // Add geojson source to map
-      .setIn(['sources', 'population'], fromJS({type: 'geojson', data}))
+      .setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
       // Add point layer to map
       .set('layers', defaultMapStyle.get('layers').push(dataLayer));
 
@@ -124,7 +132,7 @@ class App extends Component {
 
       await this.updateSheetData(this.state.year, this.state.ageGroup);
 
-      updatePercentiles(data,
+      updateDataValue(data,
                         f => f.properties.Id,
                         SheetData,
                         (f, districtId) => {
@@ -200,6 +208,37 @@ class App extends Component {
 
   }
 
+  _onHover = (event) => {
+    const district =  event.features && event.features.find(f => f.layer.id === 'districts');
+    if( !district ) {
+      return;
+    }
+
+    const data = this.state.data;
+    const {features} = data;
+    const _features = features.map( feature => {
+      if( feature.properties.Id === district.properties.Id ) {
+        // hovered: actual = -1
+        if( feature.properties.actual_value != -1) {
+          feature.properties.previous_value = feature.properties.actual_value;
+          feature.properties.actual_value = -1;
+        }
+      } else {
+        // not hovered: prev => actual
+        feature.properties.actual_value = feature.properties.previous_value;
+      }
+      return feature;
+    })
+
+    const _mapStyle = this.state.mapStyle
+      .setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
+    this.setState({
+                    data: data,
+                    mapStyle: _mapStyle}
+                 );
+
+  }
+
   render() {
 
     const {viewport, mapStyle} = this.state;
@@ -212,11 +251,15 @@ class App extends Component {
             mapStyle={mapStyle}
             onViewportChange={this._onViewportChange}
             onClick={this.onClick}
+            onHover={this._onHover}
             mapboxApiAccessToken={MAPBOX_TOKEN}>
 
             {this._renderPopup()}
 
           </MapGL>
+          <div className="fullscreen" style={fullscreenControlStyle}>
+             <FullscreenControl container={document.querySelector('body')}/>
+          </div>
           <ControlPanel containerComponent={this.props.containerComponent}
                         settings={this.state}
                         onChange={this._updateSettings} />
