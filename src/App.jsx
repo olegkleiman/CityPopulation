@@ -81,23 +81,8 @@ class App extends Component {
       await this.getSheetData(sheetName) :
       SheetData[sheetName].rawData;
 
-    let columns = [];
-    const districtsMap = new Map();
-    districtsData.forEach( (item, index) => {
-      if( index === 0 ) {
-        columns = item;
-      } else {
-        const columnIndex = columns.findIndex( item => item === ageGroup );
-        districtsMap.set(item[0], {
-          "total": parseFloat(item[columnIndex].replace(/,/g, '')),
-        });
-      }
-    });
+    SheetData.recalculateMap(sheetName, ageGroup);
 
-    SheetData[sheetName] = {
-      map: districtsMap,
-      rawData: districtsData
-    }
   }
 
   _loadData = async(data) => {
@@ -109,15 +94,15 @@ class App extends Component {
                       SheetData,
                       (f, districtId) => {
                         const row = f[this.state.year].map.get(districtId);
-                        return row ? row.total : NaN;
+                        return row ? row.calculated : NaN;
                       });
 
 
     const layers = defaultMapStyle.get('layers');
 
     const mapStyle = defaultMapStyle
-      // Add geojson source to map
-      .setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
+      // Add geojson sources to map, it's immutual
+      .setIn(['sources', 'google_spreadsheet'], fromJS({type: 'geojson', data}))
       .setIn(['sources', 'google_spreadsheet_borders'], fromJS({type: 'geojson', data}))
       // Add polygon (fill) andd line (borders) layers layer to map
       .set('layers', layers.push(dataLayer, bordersLayer))
@@ -132,19 +117,23 @@ class App extends Component {
     const {data, mapStyle} = this.state;
     if (data) {
 
-      await this.updateSheetData(this.state.year, this.state.ageGroup);
+      // await this.updateSheetData(this.state.year, this.state.ageGroup);
+      ['2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'].map( sheetName => {
+            SheetData.recalculateMap(sheetName, this.state.ageGroup);
+      });
 
       updateDataValue(data,
                         f => f.properties.Id,
                         SheetData,
                         (f, districtId) => {
                           const row = f[this.state.year].map.get(districtId);
-                          return row ? row.total : NaN;
+                          return row ? row.calculated : NaN;
                         }
                       );
 
-      const newMapStyle = mapStyle.setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
+      const newMapStyle = mapStyle.setIn(['sources', 'google_spreadsheet'], fromJS({type: 'geojson', data}))
       this.setState({mapStyle: newMapStyle});
+
 
     }
   }

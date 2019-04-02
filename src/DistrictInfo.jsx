@@ -24,7 +24,7 @@ const DistrictInfo = ({info}) => {
         const value = SheetData[year].map.get(districtId);
         data.push( {
           x: year.toString(),
-          y: value.total
+          y: value.calculated
         })
       }
     }

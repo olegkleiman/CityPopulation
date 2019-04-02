@@ -1,31 +1,39 @@
 let sheetData = {
 
+  recalculateMap(sheetName, columnName) {
+
+      const rawData = this[sheetName].rawData;
+      const columns = rawData[0];
+      const columnIndex = columns.findIndex( item => item === columnName );
+
+      const districtsMap = new Map();
+      rawData.forEach( (row, index) => {
+
+          if( index != 0 ) {
+            const calculated = row[columnIndex].replace(/,/g, '');
+            districtsMap.set(row[0], {
+                "calculated": parseFloat(calculated)
+            })
+          }
+      })
+
+      this[sheetName].map = districtsMap;
+
+  },
+
   load(sheetId) {
 
-    ['2010', '2011', '2012', '2013', '2014', '2015', '2016'].map( async(sheetName) => {
+    ['2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016'].map( async(sheetName) => {
         const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=AIzaSyABrJkY9bVKLn3YB8f4kmiiGBDWhv4goYA&majorDimension=ROWS`;
         const resp = await fetch(url);
         const respJson = await resp.json();
 
         const districtsData = respJson.values;
 
-        let columns = [];
-        const districtsMap = new Map();
-        districtsData.forEach( (item, index) => {
-          if( index === 0 ) {
-            columns = item;
-          } else {
-            const columnIndex = columns.findIndex( item => item === 'total' );
-            districtsMap.set(item[0], {
-              "total": parseFloat(item[columnIndex].replace(/,/g, '')),
-            });
-          }
-        });
-
         this[sheetName] = {
-          map: districtsMap,
           rawData: districtsData
         }
+        this.recalculateMap(sheetName, 'total');
     })
 
   }
