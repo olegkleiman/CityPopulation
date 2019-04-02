@@ -143,7 +143,7 @@ class App extends Component {
                         }
                       );
 
-      const newMapStyle = mapStyle.setIn(['sources', 'population', 'data'], fromJS(data));
+      const newMapStyle = mapStyle.setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
       this.setState({mapStyle: newMapStyle});
 
     }
