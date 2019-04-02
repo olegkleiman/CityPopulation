@@ -24,4 +24,36 @@ export const dataLayer = fromJS({
   }
 });
 
+export const bordersLayer = fromJS({
+  id: 'districts_borders',
+  source: 'google_spreadsheet_borders',
+  type: 'line',
+  paint: {
+    'line-blur': 2,
+    'line-opacity': 1.0,
+    'line-width': {
+      property: 'actual_value',
+      stops: [
+          [-1, 5],
+          [0, 1],
+          [1, 1],
+          [2, 1],
+          [3, 1],
+          [4, 1],
+      ]
+    },
+    'line-color': {
+      property: 'actual_value',
+      stops: [
+        [-1, '#226CB2'],
+        [0, '#fff'],
+        [1, '#fff'],
+        [2, '#fff'],
+        [3, '#fff'],
+        [4, '#fff']
+      ]
+    }
+  }
+});
+
 export const defaultMapStyle = fromJS(MAP_STYLE);

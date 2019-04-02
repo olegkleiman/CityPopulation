@@ -9,7 +9,7 @@ import {fromJS} from 'immutable';
 import ControlPanel from './ControlPanel';
 import Legend from './Legend';
 import DistrictInfo from './DistrictInfo';
-import {defaultMapStyle, dataLayer} from './map-style.js';
+import {defaultMapStyle, dataLayer, bordersLayer} from './map-style.js';
 import {updateDataValue} from './utils';
 import SheetData from './SheetData';
 
@@ -112,13 +112,15 @@ class App extends Component {
                         return row ? row.total : NaN;
                       });
 
-    // const layers = defaultMapStyle.get('layers');
+
+    const layers = defaultMapStyle.get('layers');
 
     const mapStyle = defaultMapStyle
       // Add geojson source to map
       .setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
-      // Add point layer to map
-      .set('layers', defaultMapStyle.get('layers').push(dataLayer));
+      .setIn(['sources', 'google_spreadsheet_borders'], fromJS({type: 'geojson', data}))
+      // Add polygon (fill) andd line (borders) layers layer to map
+      .set('layers', layers.push(dataLayer, bordersLayer))
 
     this.setState({data, mapStyle});
   };
@@ -209,6 +211,11 @@ class App extends Component {
   }
 
   _onHover = (event) => {
+
+    const {popupInfo} = this.state;
+    if( popupInfo )
+      return;
+
     const district =  event.features && event.features.find(f => f.layer.id === 'districts');
     if( !district ) {
       return;
@@ -231,7 +238,7 @@ class App extends Component {
     })
 
     const _mapStyle = this.state.mapStyle
-      .setIn(['sources', 'google spreadsheet'], fromJS({type: 'geojson', data}))
+      .setIn(['sources', 'google_spreadsheet_borders'], fromJS({type: 'geojson', data}))
     this.setState({
                     data: data,
                     mapStyle: _mapStyle}
