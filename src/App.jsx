@@ -67,7 +67,7 @@ class App extends Component {
 
   componentDidMount() {
 
-    requestJson('./data/merged.json', (error, response) => {
+    requestJson('./assets/merged.json', (error, response) => {
       if (!error) {
         this._loadData(response);
       }
