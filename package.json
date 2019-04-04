@@ -1,7 +1,7 @@
 {
   "name": "CityMovements",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.jsx",
   "license": "MIT",
   "babel": {
     "presets": [
@@ -11,6 +11,10 @@
     "plugins": [
       "@babel/plugin-proposal-class-properties"
     ]
+  },
+  "engines": {
+    "node": ">=10.40",
+    "npm": ">=5.5.1"
   },
   "scripts": {
     "prepare": "geojson-merge ./data/geoJson/*.geojson > ./dist/assets/merged.json",
