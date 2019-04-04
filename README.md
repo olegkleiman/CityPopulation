@@ -5,7 +5,7 @@ Population data is taken from publicly accessible [Google Sheets](https://docs.g
 ## How to build
 1. Clone the repo
 2. <code>yarn install</code>
-3. Install [geojson-merge](https://github.com/mapbox/geojson-merge#cli) globally <code>yarn global add @mapbox/geojson-merge</code>
+3. Install [geojson-merge](https://github.com/mapbox/geojson-merge#cli) globally: <code>yarn global add @mapbox/geojson-merge</code>
 3. Then <code>yarn prepare</code> to merge geoJsons for city districts into one file (server as .json)
 ## How to launch
 1. Install <code>serve</code> globally
