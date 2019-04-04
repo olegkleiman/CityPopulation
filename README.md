@@ -10,6 +10,6 @@
 2. Then just run <code>serve</code> from the root folder
 Or
 1. Run <code>yarn start-local</code> to serve from <code>webpack-dev-server</code>
-## How to launch from Heroku
+## How to launch for Heroku
 1.  Just deploy to Heroku by pushing to GitHub. It's synchronized! After deployent, script <code>heroku-postbuild</code> will be executed and <code>bundle.js</code> will be created there. The launch target is [here](https://tlvpopulation.herokuapp.com/dist/)
 
