@@ -14,11 +14,11 @@
   },
   "engines": {
     "node": ">=10.14.1",
-    "npm": ">=5.5.1"
+    "npm": ">=6.4.1"
   },
   "scripts": {
     "prepare": "geojson-merge ./data/geoJson/*.geojson > ./dist/assets/merged.json",
-    "start": "node ./node_modules/webpack/bin/webpack.js -d",
+    "start": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js  -d",
     "serve": "webpack-dev-server --progress --hot",
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
