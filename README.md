@@ -1,5 +1,15 @@
 ### Population data is taken from publicly accessible Google Sheets. This is a stand-alone site but targeted to be an application for TLV ODS portal.
 
 ## How to build
-1. Run <code>yarn prepare</code> to merge geoJsons for city districts into one file (server as .json)
-2. Run <code>yarn start</code> to serve from <code>webpack-dev-server</code> or <code>yarn build</code> just to build a bundle that may be served by any http server.
+1. Clone the repo
+2. <code>yarn install</code>
+3. Install [geojson-merge](https://github.com/mapbox/geojson-merge#cli) globally <code>yarn global add @mapbox/geojson-merge</code>
+3. Then <code>yarn prepare</code> to merge geoJsons for city districts into one file (server as .json)
+## How to launch
+1. Install <code>serve</code> globally
+2. Then just run <code>serve</code> from the root folder
+Or
+1. Run <code>yarn start-local</code> to serve from <code>webpack-dev-server</code>
+## How to launch from Heroku
+1.  Just deploy to Heroku by pushing to GitHub. It's synchronized! After deployent, script <code>heroku-postbuild</code> will be executed and <code>bundle.js</code> will be created there. The launch target is (here)[https://tlvpopulation.herokuapp.com/dist/]
+
