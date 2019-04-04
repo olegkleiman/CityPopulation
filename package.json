@@ -18,7 +18,7 @@
   },
   "scripts": {
     "prepare": "geojson-merge ./data/geoJson/*.geojson > ./dist/assets/merged.json",
-    "start": "node ./node_modules/webpack/bin/webpack.js --config webpack.config.js -d",
+    "start": "serve",
     "heroku-postbuild": "webpack -p",
     "serve": "webpack-dev-server --progress --hot",
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
@@ -41,6 +41,7 @@
     "react-dom": "^16.8.6",
     "react-map-gl": "^4.1.1",
     "react-vis": "^1.11.6",
+    "serve": "^11.0.0",
     "webpack": "^4.29.6"
   },
   "devDependencies": {
