@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/olegkleiman/CityPopulation.svg?branch=master)](https://travis-ci.org/olegkleiman/CityPopulation)
+https://img.shields.io/github/license/olegkleiman/CityPopulation.svg
 
 Population data is taken from publicly accessible [Google Sheets](https://docs.google.com/spreadsheets/d/1GJWgz04VTdJIPT5y4N8qkY-fkNc3lvbxATv8TeC-deA/edit#gid=849134337). This is a stand-alone site but targeted to be an application for TLV ODS portal.
 
